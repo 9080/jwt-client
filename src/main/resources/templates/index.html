@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>试一试</title>
+    <script src="jquery-3.3.1.min.js" type="text/javascript"></script>
+</head>
+<body>
+    <h1>Hello word!!!</h1>
+    <p th:text="${hello}"></p>
+    <label id="welcome"></label>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            aa();
+        });
+        function aa() {
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: '/validateLogin',
+
+                data: {"token":localStorage.getItem("token")},
+                success: function (data) {
+                    if(data != null){
+                        var dataobj = $.parseJSON(data);
+                        var userName = dataobj.userName;
+                        $("#welcome").html(userName);
+                    }else{
+                        $("#welcome").html("未登录");
+                    }
+                }
+            });
+        }
+
+    </script>
+
+</body>
+</html>
