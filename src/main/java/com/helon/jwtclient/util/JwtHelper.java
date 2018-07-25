@@ -1,4 +1,4 @@
-package com.helon.jwt.util;
+package com.helon.jwtclient.util;
 
 import com.alibaba.fastjson.JSONObject;
 import io.jsonwebtoken.Claims;
