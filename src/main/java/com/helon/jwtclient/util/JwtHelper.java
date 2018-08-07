@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +27,7 @@ public class JwtHelper {
     private static Logger logger = LoggerFactory.getLogger(JwtHelper.class);
 
     //签名秘钥
-    private final static String base64Seceret = "MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjY=";
+    private final static String base64Secret = "MDk4ZjZiY2Q0NjIxZDM3M2NhZGU0ZTgzMjYyN2I0ZjY=";
     //超时毫秒数
     private final static int expiresSecond = 1800000;
 
@@ -41,7 +42,7 @@ public class JwtHelper {
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         long nowTimeMillis = System.currentTimeMillis();
         Date now = new Date(nowTimeMillis);
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(base64Seceret);
+        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(base64Secret);
 
         Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
         //添加构成JWT的参数
@@ -69,7 +70,7 @@ public class JwtHelper {
     public static Claims parseJWT(String jsonWebToken) {
         Claims claims;
         try {
-            claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(base64Seceret))
+            claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(base64Secret))
                     .parseClaimsJws(jsonWebToken).getBody();
         } catch (Exception e) {
             claims = null;
@@ -86,12 +87,15 @@ public class JwtHelper {
      * @Modified By:
      */
     public static String validateLogin(String jsonWebToken) {
-        Claims claims = parseJWT(jsonWebToken);
         Map<String, Object> retMap = null;
-        if (claims != null) {
-            retMap = new HashMap<>();
-            retMap.put("userId", claims.get("userId"));
-            retMap.put("userName", claims.get("userName"));
+        if(StringUtils.isNotBlank(jsonWebToken)){
+            Claims claims = parseJWT(jsonWebToken);
+            if (claims != null) {
+                retMap = new HashMap<>();
+                retMap.put("userId", claims.get("userId"));
+                retMap.put("userName", claims.get("userName"));
+                retMap.put("freshToken", generateJWT((String)claims.get("userId"), (String)claims.get("userName")));
+            }
         }
         return retMap!=null?JSONObject.toJSONString(retMap):null;
     }

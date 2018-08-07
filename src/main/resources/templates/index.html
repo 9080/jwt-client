@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>试一试</title>
+    <title>jwt客户端</title>
     <script src="jquery-3.3.1.min.js" type="text/javascript"></script>
 </head>
 <body>
@@ -10,22 +10,48 @@
     <p th:text="${hello}"></p>
     <label id="welcome"></label>
 
+    <iframe id="child" src="http://www.jwtserver.com"></iframe>
     <script type="text/javascript">
-        $(document).ready(function () {
+        //页面初始化向iframe域名发送消息
+        window.onload = function() {
+            console.log('get key value......................')
+            window.frames[0].postMessage(JSON.stringify({type:"GET",key:"User-Token"}),'*');
             aa();
-        });
+        }
+        //监听message信息，接收从iframe域下获取到的token信息，然后存储
+        window.addEventListener('message', function(e) {
+            console.log('listen.....');
+            var data = e.data;
+            console.log(data);
+            if(data != null){
+                localStorage.setItem("User-Token", data);
+            }
+        }, false);
+
         function aa() {
             $.ajax({
                 type: "post",
                 dataType: "json",
                 url: '/validateLogin',
 
-                data: {"token":localStorage.getItem("token")},
-                success: function (data) {
+                data: '',
+                beforeSend:function(XMLHttpRequest){
+                    if(localStorage.getItem("User-Token")!=null){
+                        XMLHttpRequest.setRequestHeader("User-Token", localStorage.getItem("User-Token"));
+                    }
+                },
+                success: function (data, status, response) {
                     if(data != null){
                         var dataobj = $.parseJSON(data);
                         var userName = dataobj.userName;
                         $("#welcome").html(userName);
+                        var ff = response.getResponseHeader("User-Token");
+                        console.log(ff);
+                        if(ff != null){
+                            localStorage.setItem("User-Token", ff);
+                            window.frames[0].postMessage(JSON.stringify({type:"SET",key:"User-Token",value:ff}),'*');
+                        }
+
                     }else{
                         $("#welcome").html("未登录");
                     }
