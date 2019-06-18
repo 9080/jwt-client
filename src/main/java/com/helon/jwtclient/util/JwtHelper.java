@@ -37,7 +37,8 @@ public class JwtHelper {
      * @param userName
      * @return
      */
-    public static String generateJWT(String userId, String userName) {
+    public static String generateJWT(String userId, String userName, String...identities) {
+
         //签名方式
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         long nowTimeMillis = System.currentTimeMillis();
@@ -52,6 +53,8 @@ public class JwtHelper {
         JwtBuilder builder = Jwts.builder().setHeader(headMap)
                 .claim("userId", userId)
                 .claim("userName", userName)
+                .claim("ip", identities[0])
+                .claim("domainName", identities[1])
                 .signWith(signatureAlgorithm, signingKey);
         //添加Token过期时间
         if (expiresSecond >= 0) {
@@ -94,14 +97,16 @@ public class JwtHelper {
                 retMap = new HashMap<>();
                 retMap.put("userId", claims.get("userId"));
                 retMap.put("userName", claims.get("userName"));
-                retMap.put("freshToken", generateJWT((String)claims.get("userId"), (String)claims.get("userName")));
+                retMap.put("ip", claims.get("ip"));
+                retMap.put("domainName", claims.get("domainName"));
+                retMap.put("freshToken", generateJWT((String)claims.get("userId"), (String)claims.get("userName"), (String)claims.get("ip"), (String)claims.get("domainName")));
             }
         }
         return retMap!=null?JSONObject.toJSONString(retMap):null;
     }
 
     public static void main(String[] args) {
-       String jsonWebKey = generateJWT("123", "张三");
+       String jsonWebKey = generateJWT("123", "张三", "192.168.16.21", "www.aa.com");
        System.out.println(jsonWebKey);
        Claims claims =  parseJWT(jsonWebKey);
        System.out.println(claims);

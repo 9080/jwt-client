@@ -24,6 +24,7 @@ import java.util.Map;
 public class ClientController {
 
     private static Logger logger = LoggerFactory.getLogger(ClientController.class);
+
     @RequestMapping("/hello")
     public String helloHtml(HashMap<String, Object> map) {
 
@@ -31,7 +32,14 @@ public class ClientController {
         return "/index";
     }
 
-
+    /**
+     * @Summary TODO
+     * @Description TODO
+     * @Author helon
+     * @Date 2018/8/7 14:14
+     * @Param [request, response]
+     * @return java.lang.String
+     **/
     @RequestMapping("/validateLogin")
     @ResponseBody
     public String validateLogin(HttpServletRequest request, HttpServletResponse response) {

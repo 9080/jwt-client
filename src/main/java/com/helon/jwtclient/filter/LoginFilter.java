@@ -37,7 +37,7 @@ public class LoginFilter implements Filter {
         String refresh = JwtHelper.validateLogin(httpServletRequest.getHeader("User-Token"));
         logger.info(refresh);
         if (StringUtils.isNotBlank(refresh)) {
-            httpServletResponse.addHeader("User-Token", JSONObject.parseObject(refresh).getString("freshToken"));
+            httpServletResponse.setHeader("User-Token", JSONObject.parseObject(refresh).getString("freshToken"));
         }
         chain.doFilter(httpServletRequest, httpServletResponse);
         logger.info("===============过滤器 后=============");

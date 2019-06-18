@@ -18,7 +18,7 @@
             window.frames[0].postMessage(JSON.stringify({type:"GET",key:"User-Token"}),'*');
             aa();
         }
-        //监听message信息，接收从iframe域下获取到的token信息，然后存储
+        //监听message信息，接收从iframe域下获取到的token信息，然后存储到localstorage或cookie中
         window.addEventListener('message', function(e) {
             console.log('listen.....');
             var data = e.data;

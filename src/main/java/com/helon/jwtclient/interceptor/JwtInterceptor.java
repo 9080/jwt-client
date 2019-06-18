@@ -22,7 +22,7 @@ public class JwtInterceptor implements HandlerInterceptor{
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         logger.info("66666666666拦截器66666666666666");
-        response.addHeader("test-inter", "112233");
+        response.setHeader("test-inter", "112233");
         return true;
     }
 
